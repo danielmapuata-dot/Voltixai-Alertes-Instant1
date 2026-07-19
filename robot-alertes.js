@@ -107,7 +107,7 @@ app.get('/', (req, res) => res.send("⚽ Robot Alertes - ACTIF"));
 app.listen(PORT, () => {
   console.log("🚀 Démarré : vérif toutes les 30s");
   surveiller();
-  setInterval(surveiller, 30000);
+  setInterval(surveiller, 45000);
   // Empêche la veille Render gratuit
   setInterval(() => { require('https').get(`http://localhost:${PORT}`); }, 600000);
 });
