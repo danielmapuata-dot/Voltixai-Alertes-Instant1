@@ -70,7 +70,7 @@ ${groupe.hashtags}`;
 // 🔍 Surveillance et formatage des données
 async function surveiller() {
   try {
-    console.log("\n🔄 Vérification des matchs...");
+    console.log("\n🔄 APPEL CRON : Vérification des matchs...");
     const reponse = await appelAPI("https://api.anysport.io/v1/livescore");
     const matchs = reponse.success ? reponse.data : [];
     console.log(`📊 ${matchs.length} match(s) trouvé(s)`);
@@ -115,15 +115,16 @@ async function surveiller() {
   }
 }
 
-app.get('/', (req, res) => res.send("⚽ Voltixai Live Score - ACTIF"));
-app.listen(PORT, () => {
-  console.log("🚀 Démarré : vérif TOUTES LES 3 MINUTES");
-  surveiller();
-  // ⏱️ Fréquence vérification : 3 minutes = 180000 ms
-  setInterval(surveiller, 180000);
-
-  // ⏱️ Anti-veille Render : aussi toutes les 3 minutes
-  setInterval(() => { 
-    https.get(`https://voltixai-infosport-4.onrender.com`);
-  }, 180000);
+// 🚀 Point d'entrée pour cron-job.org : c'est CETTE URL qui déclenche tout
+app.get('/declencher', async (req, res) => {
+  await surveiller();
+  res.send("✅ Traitement terminé par cron");
 });
+
+app.get('/', (req, res) => res.send("⚽ Voltixai Live Score - EN ATTENTE DE CRON"));
+
+app.listen(PORT, () => {
+  console.log("🚀 Serveur démarré : c'est cron-job.org qui publie toutes les 3min");
+  // ❌ PLUS AUCUN setInterval ! Plus de boucle automatique
+});
+      
